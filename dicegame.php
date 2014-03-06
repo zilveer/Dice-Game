@@ -14,11 +14,6 @@ if(!isset($_SESSION['player'])){
 	$_SESSION['scores']= array();
 }
 
-if($_SESSION['player'] > $_SESSION['players']){
-		$_SESSION['round']++;
-		$_SESSION['player']=1;
-}
-
 if($_SESSION['round']<= $_SESSION['numrounds']){
 	if($_POST['state']=="Roll"){	
 		$dice = roll(); //dice contains the values of each die for the roll
@@ -139,6 +134,10 @@ function printTable($dice){ //prints the table for
 if($_SESSION['state']== "Roll")
 	$_SESSION['player']++;
 
+if($_SESSION['player'] > $_SESSION['players']){
+		$_SESSION['round']++;
+		$_SESSION['player']=1;
+}
 $eles['savedDice'] = $_SESSION['savedDice'];
 $eles['numrounds'] = $_SESSION['numrounds'];
 $eles['players'] = $_SESSION['players'];

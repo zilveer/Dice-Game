@@ -59,11 +59,11 @@
 				$("#dice").show();
 				$.post("dicegame.php", {names:namesarray, players:$(numplayers).val(), rounds:$(numrounds).val(), state:"Reroll", roll:2}, function(data){
 					for(i=0; i<data.dice.length; i++){
-						images = '<img src="images/'+data.dice[i]+'.png" height=100 width = 100 >';
+						images += '<img src="images/'+data.dice[i]+'.png" height=100 width=100 >';
 					}
 					$('#dice').html(images);
 					$('#table').html(data.table);
-					alert(JSON.stringify(data));
+					//alert(JSON.stringify(data));
 					//alert(data.state);
 					if(data.state == "Gameover")
 						alert("Gameover");
@@ -77,11 +77,11 @@
 				$("#dice").show();
 				$.post("dicegame.php", {names:namesarray, players:$(numplayers).val(), rounds:$(numrounds).val(), state:"Roll", roll:1}, function(data){
 					for(i=0; i<data.dice.length; i++){
-						images += '<img src="images/'+data.dice[i]+'.png" height=100 width=100>';
+						images += '<img src="images/'+data.dice[i]+'.png" height=100 width=100 >';
 					}
 					$('#dice').html(images);
 					$('#table').html(data.table);
-					alert(JSON.stringify(data));
+					//alert(JSON.stringify(data));
 					//alert(data.state);
 					if(data.state == "Gameover"){
 						alert("Gameover");
