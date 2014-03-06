@@ -1,0 +1,149 @@
+<!DOCTYPE HTMl>
+<html lang="en">
+<head>
+	<title>Dice Game</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="../bootstrap/js/bootstrap.min.js"></script>
+<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<style type="text/css">
+	.page-header{padding-left: 5%; color:@gray-lighter;}
+</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#back").hide();
+		$("#startover").hide();
+		$('.playing').hide();
+		$("#form").keypress(function(e) {
+               if(e.which == 13) {
+                    $("#start").trigger('click');
+               }
+       	});
+		images = '';
+		for(i=0; i<6; i++){
+			 images += '<img src="images/1.png" height = 100 width = 100>';
+		}
+
+		$("#numplayers").focus();
+		$(document).on('click',"#start",function(){
+			//submit the players and rounds post to php page
+			//change the text in start to next
+			//hide the num players and num rounds text boxes 
+		
+			if($(this).text()=="Start"){
+				if( !isNaN($("#numplayers").val()) && !isNaN($("#numrounds").val()) && $("#numplayers").val() > 0 && $("#numrounds").val() > 0){
+					for(i=0; i<$("#numplayers").val();i++){
+						$("#back").before('<div class="form-group names"><label for="names'+i+'">Enter Name for Player '+(i+1)+'</label><input type = "text" class="form-control" id="playerName'+i+'"></div>');
+					}
+					$("#playerName0").focus();
+					$(".firstInputs").hide();
+					$("#start").text('Next');
+					$("#back").show();
+
+				}else{
+					alert("You must enter integer values for players and rounds.");
+				}
+
+			}else if($(this).text()=="Next"){
+				namesarray= Array();
+				for(i=0; i<$("#numplayers").val();i++){
+					namesarray.push($("#playerName"+i).val());
+				}
+				$(".names").hide();
+				$("#start").text("Roll");
+				$(".playing").show();
+				$("#dice").show();
+				
+			}else if($(this).text()=="Reroll"){
+				$("#table").show();
+				$("#dice").show();
+				$.post("dicegame.php", {names:namesarray, players:$(numplayers).val(), rounds:$(numrounds).val(), state:"Reroll", roll:2}, function(data){
+					for(i=0; i<data.dice.length; i++){
+						images = '<img src="images/'+data.dice[i]+'.png" height=100 width = 100 >';
+					}
+					$('#dice').html(images);
+					$('#table').html(data.table);
+					alert(JSON.stringify(data));
+					//alert(data.state);
+					if(data.state == "Gameover")
+						alert("Gameover");
+					//alert(data['dice']);
+				},"json");
+				$("#start").text("Roll");
+				images ='';
+			}else if ($(this).text()=="Roll"){
+				$("#table").show();
+				$("#dice").html(images);
+				$("#dice").show();
+				$.post("dicegame.php", {names:namesarray, players:$(numplayers).val(), rounds:$(numrounds).val(), state:"Roll", roll:1}, function(data){
+					for(i=0; i<data.dice.length; i++){
+						images += '<img src="images/'+data.dice[i]+'.png" height=100 width=100>';
+					}
+					$('#dice').html(images);
+					$('#table').html(data.table);
+					alert(JSON.stringify(data));
+					//alert(data.state);
+					if(data.state == "Gameover"){
+						alert("Gameover");
+						$("#startover").show();
+					}
+
+					if(data.state == "Reroll")
+						$("#start").text("Reroll");
+					//alert(data['dice']);
+				},"json");
+				images ='';
+			}
+		});
+		
+		$(document).on("click","#back",function(){
+			if($("#start").text()=="Roll" || $("#start").text()=="Reroll"){
+				$(".names").show();
+				$("#table").hide();
+				$('.playing').hide();
+				$("#start").text("Next");
+				$("#dice").hide();
+			}else if ($("#start").text()=="Next"){
+				location.reload();
+			}
+		});
+		$(document).on("click","#startover",function(){
+			location.reload();
+		})
+	})
+</script>
+<div class = "page-header"><H1>Dice Game</H1></div>
+</head>
+<body>
+	<div class = "row">
+	<div class = "col-xs-12 col-sm-7 col-sm-offset-2">
+	<form role= "form" id = "form">
+		<div class='form-group playing'>
+			<p>Press Roll to Begin Playing</p>
+		</div>
+		<div class = "form-group firstInputs">
+			<div><label for="numplayers">Enter the Number of Players</label>
+				<div><input type = "text"  class = "form-control" id="numplayers" name = "numplayers"></div>
+			</div>
+		</div>
+		<div class= "form-group firstInputs">
+			<div><label for="numrounds">Enter the number of Rounds</label>
+				<input type = "text" class="form-control" id="numrounds" name = "numrounds"></div>
+		</div>
+		<div class="form-group" id='dice'>
+			
+		</div>
+		<div class = "form-group">
+			<div id='table' class= 'table-responsive'></div>
+		</div>
+		<div class = "form-group">
+			<div>
+				<button type = "button" id="back" class ="btn btn-danger" name = "back">Back</button>
+				<button type = "button"  id="start" class="btn btn-primary"  name = "start">Start</button>
+				<button type = "button"  id="startover" class="btn btn-primary"  name = "startover">Start Over</button>
+			</div>
+		</div>
+		
+	</form>
+</body>
+</html>
